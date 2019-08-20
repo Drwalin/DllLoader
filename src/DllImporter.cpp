@@ -2,12 +2,13 @@
 #ifndef DLL_IMPORTER_CPP
 #define DLL_IMPORTER_CPP
 
+#include "DllImporter.h"
 
 #if defined __WIN32__ || defined _WIN64
 
 #include <windows.h>
 
-void * DLLLoad( const char * file )
+void * DllLoad( const char * file )
 {
 	if( file )
 	{
@@ -16,7 +17,7 @@ void * DLLLoad( const char * file )
 	return nullptr;
 }
 
-void DLLRelease( void * handle )
+void DllRelease( void * handle )
 {
 	if( handle )
 	{
@@ -24,7 +25,7 @@ void DLLRelease( void * handle )
 	}
 }
 
-void * DLLGetObject( void * handle, const char * objectName )
+void * DllGetObject( void * handle, const char * objectName )
 {
 	if( handle && objectName )
 	{
@@ -37,7 +38,7 @@ void * DLLGetObject( void * handle, const char * objectName )
 
 #include <dlfcn.h>
 
-void * DLLLoad( const char * file )
+void * DllLoad( const char * file )
 {
 	if( file )
 	{
@@ -46,7 +47,7 @@ void * DLLLoad( const char * file )
 	return nullptr;
 }
 
-void DLLRelease( void * handle )
+void DllRelease( void * handle )
 {
 	if( handle )
 	{
@@ -54,7 +55,7 @@ void DLLRelease( void * handle )
 	}
 }
 
-void * DLLGetObject( void * handle, const char * objectName )
+void * DllGetObject( void * handle, const char * objectName )
 {
 	if( handle && objectName )
 	{
@@ -78,14 +79,15 @@ void * DLLGetObject( void * handle, const char * objectName )
 void * Dll::Open( const char * dllFileName )
 {
 	this->Close();
-	this->handle = DLLLoad( dllFileName );
+	this->handle = DllLoad( dllFileName );
 	return this->handle;
 }
 
 void Dll::Close()
 {
 	if( this->handle )
-		DLLRelease( this->handle );
+		DllRelease( this->handle );
+	this->handle = NULL;
 }
 
 Dll::Dll()
@@ -98,7 +100,7 @@ Dll::Dll( const char * dllFileName )
 	this->Open( dllFileName );
 }
 
-~Dll::Dll()
+Dll::~Dll()
 {
 	this->Close();
 }

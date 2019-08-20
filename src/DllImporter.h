@@ -7,19 +7,24 @@ extern "C"
 {
 #endif
 
-void * DLLLoad( const char * file );
-void DLLRelease( void * handle );
-void * DLLGetObject( void * handle, const char * objectName );
+void * DllLoad( const char * file );
+void DllRelease( void * handle );
+void * DllGetObject( void * handle, const char * objectName );
 
 #ifdef __cplusplus
 }
 #endif
 
+
+
 #ifdef __cplusplus
+
 class Dll
 {
 private:
+	
 	void * handle;
+	
 public:
 	
 	void * Open( const char * dllFileName );
@@ -28,7 +33,7 @@ public:
 	template < typename T >
 	T * Get( const char * objectName )
 	{
-		return reinterpret_cast<T*>( DLLGetObject( this->handle, objectName ) );
+		return reinterpret_cast<T*>( DllGetObject( this->handle, objectName ) );
 	}
 	
 	Dll();
@@ -36,6 +41,7 @@ public:
 	
 	~Dll();
 };
+
 #endif
 
 #endif
