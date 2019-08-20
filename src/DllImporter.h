@@ -27,13 +27,14 @@ private:
 	
 public:
 	
+	bool IsValid() const;
 	void * Open( const char * dllFileName );
 	void Close();
 	
 	template < typename T >
-	T * Get( const char * objectName )
+	T Get( const char * objectName )
 	{
-		return reinterpret_cast<T*>( DllGetObject( this->handle, objectName ) );
+		return reinterpret_cast<T>( DllGetObject( this->handle, objectName ) );
 	}
 	
 	Dll();

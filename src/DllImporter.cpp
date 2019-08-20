@@ -42,7 +42,7 @@ void * DllLoad( const char * file )
 {
 	if( file )
 	{
-		return dlopen( file, RTLD_LAZY );
+		return dlopen( file, RTLD_NOW );	// RTLD_LAZY );
 	}
 	return nullptr;
 }
@@ -76,6 +76,11 @@ void * DllGetObject( void * handle, const char * objectName )
 
 #if defined __cplusplus
 
+bool Dll::IsValid() const
+{
+	return this->handle != NULL;
+}
+
 void * Dll::Open( const char * dllFileName )
 {
 	this->Close();
@@ -97,6 +102,7 @@ Dll::Dll()
 
 Dll::Dll( const char * dllFileName )
 {
+	this->handle = NULL;
 	this->Open( dllFileName );
 }
 
