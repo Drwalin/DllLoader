@@ -17,7 +17,7 @@
 
 #define CLASS_FACTORY_GENERATE_NEEDED_FUNCTIONS_DEFINITION( className ) \
 	std::shared_ptr<className> staticGlobal##className##Instantiator( new className() ); \
-	ClassFactoryBase::~ClassFactoryBase() {} \
+	ClassFactoryBase::~ClassFactoryBase(){} \
 	extern "C" std::shared_ptr<ClassFactoryBase> GetClassInstantiator() { return std::dynamic_pointer_cast<ClassFactoryBase>( staticGlobal##className##Instantiator ); } \
 	extern "C" void Destructor( ClassFactoryBase * ptr ) { delete ((className*)(ptr)); }
 

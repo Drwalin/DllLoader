@@ -6,7 +6,8 @@
 
 #include <cstdio>
 
-std::shared_ptr<ClassFactoryBase> ClassFactory::GetNewOf( const char * moduleName )
+template < typename T >
+std::shared_ptr<T> ClassFactory<T>::GetNewOf( const char * moduleName )
 {
 	auto it = this->uniqueObjects.find( moduleName );
 	if( it == this->uniqueObjects.end() )
@@ -14,7 +15,8 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::GetNewOf( const char * moduleNam
 	return it->second->New();
 }
 
-std::shared_ptr<ClassFactoryBase> ClassFactory::GetNewOf( const char * moduleName, void * args )
+template < typename T >
+std::shared_ptr<T> ClassFactory<T>::GetNewOf( const char * moduleName, void * args )
 {
 	auto it = this->uniqueObjects.find( moduleName );
 	if( it == this->uniqueObjects.end() )
@@ -22,7 +24,8 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::GetNewOf( const char * moduleNam
 	return it->second->New( args );
 }
 
-std::shared_ptr<ClassFactoryBase> ClassFactory::GetClassInstantiator( const char * moduleName )
+template < typename T >
+std::shared_ptr<T> ClassFactory<T>::GetClassInstantiator( const char * moduleName )
 {
 	auto it = this->uniqueObjects.find( moduleName );
 	if( it == this->uniqueObjects.end() )
@@ -30,7 +33,8 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::GetClassInstantiator( const char
 	return it->second;
 }
 
-std::shared_ptr<ClassFactoryBase> ClassFactory::AddClass( const char * modulePath, const char * moduleName )
+template < typename T >
+std::shared_ptr<T> ClassFactory<T>::AddClass( const char * modulePath, const char * moduleName )
 {
 	auto it = this->uniqueObjects.find( moduleName );
 	if( it != this->uniqueObjects.end() )
@@ -42,7 +46,7 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::AddClass( const char * modulePat
 		return NULL;
 	}
 	
-	std::shared_ptr<ClassFactoryBase>(*GetClassInstantiator)();
+	std::shared_ptr<T>(*GetClassInstantiator)();
 	GetClassInstantiator = dll->Get<decltype(GetClassInstantiator)>( "GetClassInstantiator" );
 	if( GetClassInstantiator == NULL )
 	{
@@ -51,7 +55,7 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::AddClass( const char * modulePat
 		return NULL;
 	}
 	
-	std::shared_ptr<ClassFactoryBase> instantiator = GetClassInstantiator();
+	std::shared_ptr<T> instantiator = GetClassInstantiator();
 	if( instantiator == NULL )
 	{
 		fprintf( stderr, "\n Cannot get instantiator from: <%s>", moduleName );
@@ -63,14 +67,18 @@ std::shared_ptr<ClassFactoryBase> ClassFactory::AddClass( const char * modulePat
 	return instantiator;
 }
 
-void ClassFactory::RemoveClass( const char * moduleName )
+template < typename T >
+void ClassFactory<T>::RemoveClass( const char * moduleName )
 {
 	this->uniqueObjects.erase( moduleName );
 	this->RemoveModule( moduleName );
 }
 
-ClassFactory::ClassFactory(){}
-ClassFactory::~ClassFactory(){}
+template < typename T >
+ClassFactory<T>::ClassFactory(){}
+
+template < typename T >
+ClassFactory<T>::~ClassFactory(){}
 
 
 #endif

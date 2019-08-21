@@ -10,6 +10,7 @@ extern "C"
 void * DllLoad( const char * file );
 void DllRelease( void * handle );
 void * DllGetObject( void * handle, const char * objectName );
+char * DllGetErrorString();
 
 #ifdef __cplusplus
 }
