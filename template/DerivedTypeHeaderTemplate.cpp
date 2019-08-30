@@ -6,9 +6,9 @@
 
 #include "DerivedTypeHeaderTemplate.h"
 
-CLASS_FACTORY_GENERATE_NEEDED_FUNCTIONS_DEFINITION( DerivedTypeHeaderTemplate );
+CLASS_FACTORY_GENERATE_NEEDED_FUNCTIONS_DEFINITION( DerivedTypeHeaderTemplate, ClassFactoryBase );
 
-CLASS_FACTORY_GENERATE_NEEDED_METHODS_DEFINITION( DerivedTypeHeaderTemplate );
+CLASS_FACTORY_GENERATE_NEEDED_METHODS_DEFINITION( DerivedTypeHeaderTemplate, ClassFactoryBase );
 CLASS_FACTORY_GENERATE_OPTIONAL_EMPTY_CONSTRUCTOS_DESTRUCTOR_DEFINITION( DerivedTypeHeaderTemplate );
 
 int DerivedTypeHeaderTemplate::SomeFunction( int a, int b )		// not needed
