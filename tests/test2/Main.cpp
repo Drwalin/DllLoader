@@ -1,6 +1,6 @@
 
 #include "Shape.h"
-#include "../../src/ClassFactory.h"
+#include "../../include/ClassFactory.h"
 
 #include <cstdio>
 
@@ -10,7 +10,7 @@
 
 int main()
 {
-	ClassFactory cf;
+	ClassFactory<Shape> cf;
 	
 	cf.AddClass( "Square.dll", "Square" );
 	cf.AddClass( "Circle.dll", "Circle" );

@@ -2,7 +2,7 @@
 #if !defined DERIVET_TYPE_HEADER_TEMPLATE_H
 #define DERIVET_TYPE_HEADER_TEMPLATE_H
 
-#include "../src/ClassFactoryBase.h"	// needed
+#include <ClassFactoryBase.h>	// needed
 
 class DerivedTypeHeaderTemplate 
 	 : public ClassFactoryBase	// needed

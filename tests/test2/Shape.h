@@ -2,7 +2,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "../../src/ClassFactoryBase.h"
+#include "../../template/ClassFactoryBase.h"
 
 class Shape 
 	 : public ClassFactoryBase

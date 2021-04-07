@@ -4,7 +4,7 @@
 #if !defined DERIVET_TYPE_HEADER_TEMPLATE_CPP
 #define DERIVET_TYPE_HEADER_TEMPLATE_CPP
 
-#include "DerivedTypeHeaderTemplate.h"
+#include <DerivedTypeHeaderTemplate.h>
 
 CLASS_FACTORY_GENERATE_NEEDED_FUNCTIONS_DEFINITION( DerivedTypeHeaderTemplate, ClassFactoryBase );
 
