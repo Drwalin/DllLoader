@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "../../src/ModulesFactory.cpp"
-#include "../../src/ClassFactory.cpp"
+#include "../../include/ClassFactory.h"
 #include "../../src/DllImporter.cpp"
 
 int main()
