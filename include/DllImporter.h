@@ -29,6 +29,7 @@ void *DllGetObject(void *handle, const char *objectName);
 char *DllGetErrorString();
 
 const char *GetDllExtension();
+const char *GetPathSeparator();
 
 #ifdef __cplusplus
 }

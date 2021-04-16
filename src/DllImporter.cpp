@@ -126,6 +126,10 @@ const char *GetDllExtension() {
 	return ".dll";
 }
 
+const char *GetPathSeparator() {
+	return "\\";
+}
+
 #elif defined __unix__
 
 #include <dlfcn.h>
@@ -162,6 +166,10 @@ char *DllGetErrorString() {
 
 const char *GetDllExtension() {
 	return ".so";
+}
+
+const char *GetPathSeparator() {
+	return "/";
 }
 
 #else
