@@ -25,11 +25,11 @@ inline std::string GetCoreName(const std::string &name) {
 	std::string ret(name);
 	int s1 = ret.rfind("/");
 	int s2 = ret.rfind("\\");
-	int slash = std::max( (s1!=std::string::npos?s1:-1), (s2!=std::string::npos?s2:-1) );
+	int slash = std::max( ((size_t)s1!=std::string::npos?s1:-1), ((size_t)s2!=std::string::npos?s2:-1) );
 	if(slash != -1)
 		ret = ret.substr(slash+1);
 	int dot = ret.rfind(".");
-	if(dot != std::string::npos)
+	if((size_t)dot != std::string::npos)
 		ret = ret.substr(0,dot);
 	return ret;
 }
