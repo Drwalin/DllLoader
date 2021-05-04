@@ -39,6 +39,10 @@ const char *GetPathSeparator();
 #ifdef __cplusplus
 
 #include <string>
+#include <map>
+#include <mutex>
+#include <memory>
+#include <atomic>
 
 class Dll {
 public:
@@ -50,18 +54,31 @@ public:
 	
 	bool IsValid() const;
 	void* Open(const char *dllFileName, bool addAppropriateExtension=true);
+	void* Open(const std::string& dllFileName, bool addAppropriateExtension=true);
 	void Close();
 	
 	template <typename T>
 	T Get(const char *objectName) {
-		return reinterpret_cast<T>(DllGetObject(this->handle, objectName));
+		return reinterpret_cast<T>(DllGetObject(handle->handle, objectName));
 	}
 	
 	static const std::string &GetExtension();
 	
 private:
 	
-	void *handle;
+	struct Handle {
+		void* handle;
+		std::atomic<size_t> count;
+		std::string name;
+	};
+	
+	static std::shared_ptr<Handle> OpenReference(const std::string& name);
+	static void CloseReference(const std::string& name);
+	
+	static std::map<std::string, std::shared_ptr<Handle>>& Handles();
+	static std::mutex& Mutex();
+	
+	std::shared_ptr<Handle> handle;
 };
 
 #endif

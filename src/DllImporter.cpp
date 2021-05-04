@@ -37,7 +37,8 @@ struct DllHandleCounterElement
 	int counter;
 };
 
-DllHandleCounterElement *dllHandleCounterMap = (DllHandleCounterElement*)malloc(sizeof(DllHandleCounterElement)*16);
+DllHandleCounterElement *dllHandleCounterMap =
+	(DllHandleCounterElement*)malloc(sizeof(DllHandleCounterElement)*16);
 int dllHandleCounterElements = 0;
 int dllHandleCounterAllocatedElements = 16;
 
@@ -51,11 +52,15 @@ DllHandleCounterElement *DllHandleCounterGetElement(void *handle) {
 	
 	if(dllHandleCounterElements == dllHandleCounterAllocatedElements) {
 		dllHandleCounterAllocatedElements *= 2;
-		dllHandleCounterMap = (DllHandleCounterElement*)realloc(dllHandleCounterMap, sizeof(DllHandleCounterElement)*dllHandleCounterAllocatedElements);
+		dllHandleCounterMap =
+			(DllHandleCounterElement*)realloc(dllHandleCounterMap,
+					sizeof(DllHandleCounterElement)*
+					dllHandleCounterAllocatedElements);
 	}
 	
 	++dllHandleCounterElements;
-	DllHandleCounterElement *ret = &(dllHandleCounterMap[dllHandleCounterElements-1]);
+	DllHandleCounterElement *ret =
+		&(dllHandleCounterMap[dllHandleCounterElements-1]);
 	ret->handle = value;
 	ret->counter = 0;
 	return ret;
@@ -71,9 +76,8 @@ void DllHandleCounterDecrement(void *handle) {
 
 int DllHandleCounterGet(void *handle) {
 	DllHandleCounterElement *ptr = DllHandleCounterGetElement(handle);
-	if(ptr) {
+	if(ptr)
 		return ptr->counter;
-	}
 	return 0;
 }
 
@@ -103,9 +107,8 @@ void DllRelease(void *handle) {
 }
 
 void *DllGetObject(void *handle, const char *objectName) {
-	if(handle && objectName) {
+	if(handle && objectName)
 		return (void*)GetProcAddress((HINSTANCE)handle, objectName);
-	}
 	return nullptr;
 }
 
@@ -116,8 +119,8 @@ char *DllGetErrorString() {
 	if(err == 0)
 		return (msg[0]=0,msg);
 	FormatMessageA(	FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-					NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-					msg, msgSize, NULL);
+					NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,
+						SUBLANG_DEFAULT), msg, msgSize, NULL);
 	
 	return msg;
 }
@@ -187,19 +190,20 @@ bool Dll::IsValid() const {
 }
 
 void* Dll::Open(const char *dllFileName, bool addAppropriateExtension) {
+	return Open(std::string(dllFileName), addAppropriateExtension);
+}
+
+void* Dll::Open(const std::string& dllFileName, bool addAppropriateExtension) {
 	Close();
-	const int bufferSize = 4096;
-	char fileName[bufferSize];
-	snprintf(fileName, bufferSize, "%s%s", dllFileName, addAppropriateExtension?GetDllExtension():"");
-	handle = DllLoad(fileName);
-	if(handle == NULL)
-		printf("\n Dll::Open error <%s>:\n   %s\n", fileName, DllGetErrorString());
-	return handle;
+	std::string name = dllFileName +
+		(addAppropriateExtension?GetDllExtension():"");
+	handle = OpenReference(name);
+	return handle->handle;
 }
 
 void Dll::Close() {
 	if(handle)
-		DllRelease(handle);
+		CloseReference(handle->name);
 	handle = NULL;
 }
 
@@ -216,9 +220,48 @@ Dll::~Dll() {
 	Close();
 }
 
+
 const std::string &Dll::GetExtension() {
 	static const std::string extension(GetDllExtension());
 	return extension;
+}
+
+
+std::shared_ptr<Dll::Handle> Dll::OpenReference(const std::string& name) {
+	std::lock_guard<std::mutex> lock(Mutex());
+	auto it = Handles().find(name);
+	if(it != Handles().end()) {
+		it->second->count++;
+		return it->second;
+	}
+	void* h = DllLoad(name.c_str());
+	if(h == NULL)
+		printf("\n Dll::Open error <%s>:\n   %s\n", name.c_str(),
+				DllGetErrorString());
+	std::shared_ptr<Handle> handle(new Handle{h, 1, name});
+	Handles()[name] = handle;
+	return handle;
+}
+
+void Dll::CloseReference(const std::string& name) {
+	std::lock_guard<std::mutex> lock(Mutex());
+	auto it = Handles().find(name);
+	if(it != Handles().end())
+		return;
+	it->second->count--;
+	if(it->second->count == 0)
+		Handles().erase(it);
+}
+
+
+std::map<std::string, std::shared_ptr<Dll::Handle>>& Dll::Handles() {
+	static std::map<std::string, std::shared_ptr<Handle>> handles;
+	return handles;
+}
+
+std::mutex& Dll::Mutex() {
+	static std::mutex mutex;
+	return mutex;
 }
 
 #endif
